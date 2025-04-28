@@ -1,27 +1,44 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useWallet } from "@/hooks/use-wallet"
 import { useToast } from "@/components/ui/use-toast"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { mintNFT } from "@/lib/solana"
 
 export function MintSection() {
-  const { connected, balance, connect } = useWallet()
+  const { connected, balance, connect, solPrice, publicKey } = useWallet()
   const [minting, setMinting] = useState(false)
+  const [mintPriceUSD] = useState(10) // Fixed price in USD
+  const [mintPriceSOL, setMintPriceSOL] = useState(0)
   const { toast } = useToast()
   const router = useRouter()
 
-  // Mock SOL price - in a real app, we would fetch this from an API
-  const solPrice = 150 // $150 per SOL
-  const mintPriceUSD = 10
-  const mintPriceSOL = mintPriceUSD / solPrice
+  // Calculate mint price in SOL based on current SOL price
+  useEffect(() => {
+    if (solPrice > 0) {
+      setMintPriceSOL(mintPriceUSD / solPrice)
+    }
+  }, [solPrice, mintPriceUSD])
 
   const handleMint = async () => {
     if (!connected) {
-      await connect()
-      return
+      try {
+        await connect()
+        // After connection, we should check again if connected before proceeding
+        // This will be handled on the next render if connection was successful
+        return
+      } catch (error) {
+        console.error("Connection error:", error)
+        toast({
+          title: "Connection required",
+          description: "Please connect your wallet to mint an NFT.",
+          variant: "destructive",
+        })
+        return
+      }
     }
 
     // Check if user has enough balance
@@ -37,17 +54,33 @@ export function MintSection() {
     try {
       setMinting(true)
 
-      // Simulate minting process
+      // Show minting toast
       toast({
         title: "Minting in progress",
         description: "Please wait while we mint your NFT...",
       })
 
-      // Simulate blockchain delay
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Call the mintNFT function from solana.ts
+      const result = await mintNFT(
+        publicKey || "your-wallet-address", // Use the actual public key if available
+        mintPriceSOL,
+      )
 
-      // Redirect to success page
-      router.push("/success")
+      if (result.success) {
+        toast({
+          title: "NFT Minted!",
+          description: `Transaction ID: ${result.txId?.slice(0, 8)}...${result.txId?.slice(-8)}`,
+        })
+
+        // Redirect to success page
+        router.push("/success?image=/images/nft-character.png")
+      } else {
+        toast({
+          title: "Minting failed",
+          description: result.error || "There was an error minting your NFT. Please try again.",
+          variant: "destructive",
+        })
+      }
     } catch (error) {
       console.error("Error minting NFT:", error)
       toast({
@@ -67,11 +100,11 @@ export function MintSection() {
 
       <div className="max-w-sm mx-auto bg-white/10 backdrop-blur-sm rounded-3xl p-8 mb-12">
         <div className="flex justify-center mb-6">
-          <Image src="/images/gift-box.png" alt="NFT Gift Box" width={200} height={200} className="rounded-lg" />
+          <Image src="/images/nft-character.png" alt="NFT Character" width={200} height={200} className="rounded-lg" />
         </div>
 
         <Button
-          className="w-full bg-white/20 hover:bg-white/30 text-white text-xl py-6 rounded-full"
+          className="w-full bg-theme-teal hover:bg-theme-teal/80 text-theme-dark text-xl py-6 rounded-full"
           onClick={handleMint}
           disabled={minting}
         >

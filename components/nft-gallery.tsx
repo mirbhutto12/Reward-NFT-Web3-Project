@@ -7,8 +7,8 @@ export function NftGallery() {
   const nfts = [
     {
       id: "1",
-      name: "Polygon Head #1",
-      image: "/images/profile-nft.png",
+      name: "RARE Character #1",
+      image: "/images/nft-character.png",
     },
   ]
 

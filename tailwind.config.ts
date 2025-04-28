@@ -47,10 +47,16 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        solana: {
-          blue: "#00FFFF",
-          purple: "#9945FF",
-          pink: "#FF7C04",
+        // Custom theme colors
+        theme: {
+          teal: "#00FFE0",
+          yellow: "#FFC93C",
+          pink: "#FF2263",
+          dark: "#001F2B",
+          text: {
+            primary: "#FFFFFF",
+            secondary: "#F55555",
+          },
         },
       },
       borderRadius: {

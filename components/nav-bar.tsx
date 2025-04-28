@@ -1,23 +1,25 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useWallet } from "@/hooks/use-wallet"
 import { usePathname } from "next/navigation"
 
 export function NavBar() {
-  const { connected, connecting, connect, disconnect } = useWallet()
+  const { connected, connecting, connect, disconnect, isDevnet } = useWallet()
   const pathname = usePathname()
 
   return (
     <nav className="py-4 flex items-center justify-between">
       <div className="flex items-center">
         <Link href="/" className="flex items-center">
-          <div className="bg-cyan-400 text-white rounded-lg w-12 h-12 flex items-center justify-center mr-2">
-            <span className="text-2xl font-bold">R</span>
-          </div>
+          <Image src="/images/logo.jpeg" alt="Reward NFT Logo" width={48} height={48} className="mr-2" />
           <span className="text-white text-2xl font-bold">Reward NFT</span>
         </Link>
+        {isDevnet && (
+          <span className="ml-2 bg-theme-teal text-theme-dark text-xs font-medium px-2 py-1 rounded-full">DEVNET</span>
+        )}
       </div>
 
       <div className="hidden md:flex items-center space-x-8">
@@ -46,7 +48,7 @@ export function NavBar() {
           </Button>
         ) : (
           <Button
-            className="bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20"
+            className="bg-theme-teal text-theme-dark hover:bg-theme-teal/80"
             onClick={connect}
             disabled={connecting}
           >

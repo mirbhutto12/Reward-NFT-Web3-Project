@@ -85,12 +85,12 @@ function QuestCard({
         <div>
           <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
           <p className="text-white/70 mb-2">{description}</p>
-          <p className="text-white font-medium">Reward: {reward}</p>
+          <p className="text-theme-teal font-medium">Reward: {reward}</p>
           {progress && <p className="text-white/70 mt-2">Progress: {progress}</p>}
         </div>
         <div className="ml-4">
           {completed ? (
-            <div className="bg-green-500 text-white rounded-full p-2">
+            <div className="bg-theme-teal text-theme-dark rounded-full p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -107,7 +107,9 @@ function QuestCard({
               </svg>
             </div>
           ) : (
-            <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2">Complete</button>
+            <button className="bg-theme-yellow hover:bg-theme-yellow/80 text-theme-dark rounded-lg px-4 py-2">
+              Complete
+            </button>
           )}
         </div>
       </div>

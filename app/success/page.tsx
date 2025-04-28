@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 
 export default function SuccessPage() {
   const searchParams = useSearchParams()
-  const [nftImage, setNftImage] = useState("/images/profile-nft.png")
+  const [nftImage, setNftImage] = useState("/images/nft-character.png")
 
   useEffect(() => {
     const image = searchParams.get("image")
@@ -30,7 +30,7 @@ export default function SuccessPage() {
         <p className="text-2xl text-white mb-8">You have successfully minted your NFT.</p>
 
         <Link href="/referrals">
-          <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white text-xl py-6 rounded-full">
+          <Button className="w-full bg-theme-pink hover:bg-theme-pink/80 text-white text-xl py-6 rounded-full">
             View My Referrals
           </Button>
         </Link>

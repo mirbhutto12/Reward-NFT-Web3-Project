@@ -16,14 +16,14 @@ export function Leaderboard() {
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center ${
                 index === 0
-                  ? "bg-cyan-400"
+                  ? "bg-theme-teal"
                   : index === 1
-                    ? "bg-green-400"
+                    ? "bg-theme-yellow"
                     : index === 2
-                      ? "bg-blue-500"
+                      ? "bg-theme-pink"
                       : index === 3
-                        ? "bg-yellow-500"
-                        : "bg-orange-500"
+                        ? "bg-theme-yellow/70"
+                        : "bg-theme-teal/70"
               }`}
             ></div>
             <span className="text-white">{entry.address}</span>

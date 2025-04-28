@@ -71,14 +71,26 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-theme-dark text-theme-text-primary;
   }
 }
 
 .gradient-bg {
-  @apply bg-gradient-to-br from-cyan-400 via-purple-500 to-rose-500;
+  @apply bg-gradient-to-br from-theme-teal via-theme-yellow to-theme-pink;
 }
 
 .card-gradient {
   @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm;
+}
+
+.button-primary {
+  @apply bg-theme-teal hover:bg-opacity-80 text-theme-dark font-medium;
+}
+
+.button-secondary {
+  @apply bg-theme-yellow hover:bg-opacity-80 text-theme-dark font-medium;
+}
+
+.button-accent {
+  @apply bg-theme-pink hover:bg-opacity-80 text-white font-medium;
 }

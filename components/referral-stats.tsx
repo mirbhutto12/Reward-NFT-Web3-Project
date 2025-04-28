@@ -1,20 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useWallet } from "@/hooks/use-wallet"
 import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
+import { generateReferralLink } from "@/lib/solana"
 
 export function ReferralStats() {
   const { publicKey } = useWallet()
   const { toast } = useToast()
   const [copied, setCopied] = useState(false)
+  const [referralLink, setReferralLink] = useState("")
 
   // Generate referral link based on public key
-  const referralLink = publicKey ? `https://rewardnft.com/ref${publicKey.slice(0, 3)}` : "https://rewardnft.com/ref123"
+  useEffect(() => {
+    if (publicKey) {
+      const link = generateReferralLink(publicKey)
+      setReferralLink(link)
+    } else {
+      setReferralLink(`${window.location.origin}/ref/demo`)
+    }
+  }, [publicKey])
 
-  // Mock stats
+  // Mock stats - in a real app, these would be fetched from a database
   const totalPoints = 126
   const referredUsers = 15
   const rewardPerReferral = 2 // USDC
@@ -58,20 +67,20 @@ export function ReferralStats() {
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="text-center">
-          <p className="text-4xl font-bold text-white">{totalPoints}</p>
+          <p className="text-4xl font-bold text-theme-teal">{totalPoints}</p>
           <p className="text-white/70 text-sm">Total Points</p>
         </div>
         <div className="text-center">
-          <p className="text-4xl font-bold text-white">{referredUsers}</p>
+          <p className="text-4xl font-bold text-theme-yellow">{referredUsers}</p>
           <p className="text-white/70 text-sm">Referred Users</p>
         </div>
         <div className="text-center">
-          <p className="text-4xl font-bold text-white">{rewardPerReferral} USDC</p>
+          <p className="text-4xl font-bold text-theme-pink">{rewardPerReferral} USDC</p>
           <p className="text-white/70 text-sm">per referral</p>
         </div>
       </div>
 
-      <Button onClick={inviteFriends} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6">
+      <Button onClick={inviteFriends} className="w-full bg-theme-yellow hover:bg-theme-yellow/80 text-theme-dark py-6">
         Invite Friends
       </Button>
     </div>

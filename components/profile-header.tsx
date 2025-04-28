@@ -16,8 +16,8 @@ export function ProfileHeader() {
       </div>
 
       <div className="flex flex-col items-center">
-        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white mb-2">
-          <Image src="/images/profile-nft.png" alt="Profile" width={96} height={96} className="object-cover" />
+        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-theme-teal mb-2">
+          <Image src="/images/nft-character.png" alt="Profile" width={96} height={96} className="object-cover" />
         </div>
         <h3 className="text-2xl font-bold text-white">user123</h3>
         <p className="text-white">Balance: {balance.toFixed(2)} USDC</p>
