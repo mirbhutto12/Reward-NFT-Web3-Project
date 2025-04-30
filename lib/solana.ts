@@ -1,20 +1,92 @@
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js"
+import { getRpcUrl } from "./utils"
 
-// Initialize connection to devnet
-const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com")
+// Initialize connection to QuickNode RPC URL with sanitized URL
+const connection = new Connection(getRpcUrl())
 
 // Check if we're on devnet
-const isDevnet = connection.rpcEndpoint.includes("devnet")
+const isDevnet = connection.rpcEndpoint.includes("devnet") || connection.rpcEndpoint.includes("quicknode")
 
-// Get SOL price from an API
+// USDC token address - hardcoded for client-side use
+// The actual value will be fetched from server when needed
+const USDC_TOKEN_ADDRESS = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+
+// Default SOL price in USD (fallback value)
+const DEFAULT_SOL_PRICE = 150
+
+// Cache for SOL price to reduce API calls
+let solPriceCache = {
+  price: DEFAULT_SOL_PRICE,
+  timestamp: 0,
+  ttl: 5 * 60 * 1000, // 5 minutes cache TTL
+}
+
+// Get SOL price from an API with improved error handling and caching
 export async function getSolPrice(): Promise<number> {
   try {
-    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd")
-    const data = await response.json()
-    return data.solana.usd
+    // Check if we have a valid cached price
+    const now = Date.now()
+    if (now - solPriceCache.timestamp < solPriceCache.ttl) {
+      return solPriceCache.price
+    }
+
+    // Try multiple price sources for redundancy
+    const sources = [
+      {
+        url: "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+        parser: (data: any) => data.solana?.usd,
+      },
+      {
+        url: "https://price.jup.ag/v4/price?ids=SOL",
+        parser: (data: any) => data.data?.SOL?.price,
+      },
+    ]
+
+    // Try each source until we get a valid price
+    for (const source of sources) {
+      try {
+        const response = await fetch(source.url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          cache: "no-cache", // Ensure we're not getting cached responses
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        const price = source.parser(data)
+
+        if (price && typeof price === "number" && price > 0) {
+          // Update cache
+          solPriceCache = {
+            price,
+            timestamp: now,
+            ttl: solPriceCache.ttl,
+          }
+          return price
+        }
+      } catch (sourceError) {
+        console.warn(`Error fetching SOL price from ${source.url}:`, sourceError)
+        // Continue to next source
+      }
+    }
+
+    // If we reach here, all sources failed but we might have a stale cache
+    if (solPriceCache.price > 0) {
+      console.warn("Using stale SOL price from cache")
+      return solPriceCache.price
+    }
+
+    // All sources failed and no valid cache, use default
+    console.warn("All price sources failed, using default SOL price")
+    return DEFAULT_SOL_PRICE
   } catch (error) {
     console.error("Error fetching SOL price:", error)
-    return 150 // Fallback price
+    return DEFAULT_SOL_PRICE // Fallback price
   }
 }
 
@@ -93,5 +165,17 @@ export async function requestAirdrop(walletAddress: string, amount = 0.01): Prom
   } catch (error) {
     console.error("Error requesting airdrop:", error)
     return false
+  }
+}
+
+// Get USDC token balance (mock implementation)
+export async function getUSDCBalance(walletAddress: string): Promise<number> {
+  try {
+    // In a real app, you would fetch the actual token balance
+    // For demo purposes, return a mock balance
+    return 25.5
+  } catch (error) {
+    console.error("Error fetching USDC balance:", error)
+    return 0
   }
 }

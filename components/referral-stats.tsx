@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { generateReferralLink } from "@/lib/solana"
 
 export function ReferralStats() {
-  const { publicKey } = useWallet()
+  const { publicKey, usdcBalance } = useWallet()
   const { toast } = useToast()
   const [copied, setCopied] = useState(false)
   const [referralLink, setReferralLink] = useState("")
@@ -41,15 +41,32 @@ export function ReferralStats() {
   }
 
   const inviteFriends = () => {
-    // In a real app, this would open a share dialog
+    // First try to copy the referral link to clipboard as a fallback
+    copyReferralLink()
+
+    // Then try to use the Web Share API if available
     if (navigator.share) {
-      navigator.share({
-        title: "Join Reward NFT",
-        text: "Mint exclusive NFTs on Solana and earn rewards!",
-        url: referralLink,
-      })
+      try {
+        navigator
+          .share({
+            title: "Join Reward NFT",
+            text: "Mint exclusive NFTs on Solana and earn rewards!",
+            url: referralLink,
+          })
+          .catch((error) => {
+            // If sharing fails (user cancels or permission denied), we already copied to clipboard
+            console.log("Share failed, but link was copied to clipboard:", error)
+          })
+      } catch (error) {
+        console.error("Error sharing:", error)
+        // We already copied to clipboard above, so no need for additional fallback
+      }
     } else {
-      copyReferralLink()
+      // Web Share API not available, but we already copied to clipboard
+      toast({
+        title: "Share not supported",
+        description: "Your browser doesn't support sharing, but the link has been copied to your clipboard.",
+      })
     }
   }
 
@@ -77,6 +94,16 @@ export function ReferralStats() {
         <div className="text-center">
           <p className="text-4xl font-bold text-theme-pink">{rewardPerReferral} USDC</p>
           <p className="text-white/70 text-sm">per referral</p>
+        </div>
+      </div>
+
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-white font-medium">Available USDC Balance</p>
+            <p className="text-2xl font-bold text-theme-teal">{usdcBalance.toFixed(2)} USDC</p>
+          </div>
+          <Button className="bg-theme-teal hover:bg-theme-teal/80 text-theme-dark">Withdraw</Button>
         </div>
       </div>
 

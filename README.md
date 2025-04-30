@@ -31,7 +31,7 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
    \`\`\`bash
-  (https://github.com/mirbhutto12/Reward-NFT-Web3-Project.git)
+   git clone https://github.com/yourusername/solana-nft-rewards.git
    cd solana-nft-rewards
    \`\`\`
 
@@ -44,7 +44,7 @@ Before you begin, ensure you have the following installed:
 
 3. Create a `.env.local` file in the root directory with the following variables:
    \`\`\`
-   NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
+   SOLANA_RPC_URL=https://api.devnet.solana.com
    \`\`\`
 
 4. Start the development server:
@@ -157,7 +157,7 @@ Follow the standard Next.js deployment process for your chosen hosting platform.
 This application connects to the Solana devnet by default. The RPC URL is set to:
 
 \`\`\`
-NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
+SOLANA_RPC_URL=https://api.devnet.solana.com
 \`\`\`
 
 ### Important Notes About Devnet
@@ -171,11 +171,30 @@ NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
 When you're ready to deploy to production, you can switch to mainnet by changing the RPC URL in your `.env.local` file:
 
 \`\`\`
-NEXT_PUBLIC_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
 \`\`\`
 
 On mainnet, all transactions involve real SOL and have real financial consequences. The airdrop feature will not work on mainnet.
 \`\`\`
+
+## Environment Configuration
+
+This project uses the following environment variables:
+
+\`\`\`
+SOLANA_RPC_URL=https://morning-indulgent-energy.solana-devnet.quiknode.pro/450ae68bfe8c733d96e2301292cc52bab5ceb2cf/
+NFT_IPFS_URL=https://quicknode.quicknode-ipfs.com/ipfs/QmWrmCfPm6L85p1o8KMc9WZCsdwsgW89n37nQMJ6UCVYNW
+USDC_TOKEN_ADDRESS=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+\`\`\`
+
+- `SOLANA_RPC_URL`: QuickNode Solana devnet RPC URL for blockchain interactions
+- `NFT_IPFS_URL`: IPFS URL for the NFT image
+- `USDC_TOKEN_ADDRESS`: Solana USDC token contract address (server-side only)
+
+## NFT Information
+
+- NFT CID: QmWrmCfPm6L85p1o8KMc9WZCsdwsgW89n37nQMJ6UCVYNW
+- IPFS Link: https://quicknode.quicknode-ipfs.com/ipfs/QmWrmCfPm6L85p1o8KMc9WZCsdwsgW89n37nQMJ6UCVYNW
 
 ## Security Considerations
 
@@ -244,7 +263,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-If you have any questions or feedback, please reach out to us at mirbhutto112@gmail.com .
+If you have any questions or feedback, please reach out to us at example@rewardnft.com.
 
 ---
 

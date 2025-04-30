@@ -3,6 +3,7 @@
 import { NavBar } from "@/components/nav-bar"
 import { ProfileHeader } from "@/components/profile-header"
 import { NftGallery } from "@/components/nft-gallery"
+import { SolanaStatus } from "@/components/solana-status"
 import { useWallet } from "@/hooks/use-wallet"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -28,6 +29,9 @@ export default function ProfilePage() {
         <div className="mt-8">
           <h1 className="text-6xl font-bold text-white mb-12">Profile</h1>
           <ProfileHeader />
+          <div className="mb-8">
+            <SolanaStatus />
+          </div>
           <NftGallery />
         </div>
         <footer className="text-center text-white mt-8">

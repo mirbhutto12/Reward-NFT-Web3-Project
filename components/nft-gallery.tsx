@@ -1,14 +1,35 @@
 "use client"
 
 import Image from "next/image"
+import { useState, useEffect } from "react"
+import { getNftIpfsUrl } from "@/lib/actions"
 
 export function NftGallery() {
+  // NFT IPFS URL - using fallback for client-side
+  const [nftImageUrl, setNftImageUrl] = useState("/images/nft-character.png")
+
+  // Fetch the NFT IPFS URL from server
+  useEffect(() => {
+    async function fetchNftUrl() {
+      try {
+        const url = await getNftIpfsUrl()
+        if (url) {
+          setNftImageUrl(url)
+        }
+      } catch (error) {
+        console.error("Error fetching NFT URL:", error)
+      }
+    }
+
+    fetchNftUrl()
+  }, [])
+
   // Mock NFT data - in a real app, we would fetch this from the blockchain
   const nfts = [
     {
       id: "1",
       name: "RARE Character #1",
-      image: "/images/nft-character.png",
+      image: nftImageUrl || "/images/nft-character-rare.png",
     },
   ]
 
@@ -23,6 +44,7 @@ export function NftGallery() {
               width={300}
               height={300}
               className="rounded-lg w-full aspect-square object-cover mb-4"
+              unoptimized={true} // Always unoptimize to handle IPFS URLs
             />
             <h3 className="text-xl font-bold text-white">{nft.name}</h3>
           </div>
