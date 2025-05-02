@@ -11,13 +11,6 @@ const config = {
   ],
   prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -48,16 +41,10 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
         // Custom theme colors
-        theme: {
-          teal: "#00FFE0",
-          yellow: "#FFC93C",
-          pink: "#FF2263",
-          dark: "#001F2B",
-          text: {
-            primary: "#FFFFFF",
-            secondary: "#F55555",
-          },
-        },
+        "theme-teal": "#00FFE0",
+        "theme-yellow": "#FFC93C",
+        "theme-pink": "#FF2263",
+        "theme-dark": "#001F2B",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -1,21 +1,27 @@
 "use server"
 
 import { Connection } from "@solana/web3.js"
+import { sanitizeUrl } from "./utils"
 
 export async function getSolanaConnection(): Promise<Connection> {
-  const rpcUrl = process.env.SOLANA_RPC_URL
+  const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL
   if (!rpcUrl) {
     throw new Error("RPC URL not defined in environment variables")
   }
 
-  const connection = new Connection(rpcUrl)
+  const connection = new Connection(sanitizeUrl(rpcUrl))
   return connection
 }
 
 export async function getCurrentSlot(): Promise<number> {
-  const connection = await getSolanaConnection()
-  const slot = await connection.getSlot()
-  return slot
+  try {
+    const connection = await getSolanaConnection()
+    const slot = await connection.getSlot()
+    return slot
+  } catch (error) {
+    console.error("Error getting current slot:", error)
+    return 0
+  }
 }
 
 // Server action to get the USDC token address

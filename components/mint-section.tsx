@@ -149,7 +149,7 @@ export function MintSection() {
         </div>
 
         <Button
-          className="w-full bg-theme-teal hover:bg-theme-teal/80 text-theme-dark text-xl py-6 rounded-full"
+          className="w-full bg-[#00FFE0] hover:bg-opacity-80 text-[#001F2B] text-xl py-6 rounded-full"
           onClick={handleMint}
           disabled={minting || loadingPrice}
         >

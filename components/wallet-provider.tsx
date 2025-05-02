@@ -21,6 +21,7 @@ type WindowWithSolana = Window & {
   phantom?: {
     solana?: PhantomProvider
   }
+  solflare?: PhantomProvider
 }
 
 type WalletContextType = {
@@ -64,6 +65,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [usdcBalance, setUsdcBalance] = useState(0)
   const [solPrice, setSolPrice] = useState(150) // Default SOL price in USD
   const { toast } = useToast()
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
+
+  // Detect if we're on a mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    }
+    setIsMobileDevice(checkMobile())
+  }, [])
 
   // Get Phantom provider
   const getProvider = (): PhantomProvider | undefined => {
@@ -73,8 +83,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     const win = window as WindowWithSolana
 
-    // Check if Phantom is installed
-    const provider = win.phantom?.solana || win.solana
+    // Check for various wallet providers
+    const provider = win.phantom?.solana || win.solana || win.solflare
 
     if (provider?.isPhantom) {
       return provider
@@ -82,17 +92,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     // If we're in development mode, provide a mock provider for testing
     if (process.env.NODE_ENV === "development" && !provider) {
-      console.warn("Phantom wallet not detected. Using mock provider for development.")
+      console.warn("Wallet not detected. Using mock provider for development.")
 
       // This is a very simple mock for development purposes
       const mockProvider: PhantomProvider = {
         isPhantom: true,
         publicKey: {
-          toString: () => "MockPhantomWalletAddress123456789",
+          toString: () => "MockWalletAddress123456789",
         } as unknown as PublicKey,
         connect: async () => ({
           publicKey: {
-            toString: () => "MockPhantomWalletAddress123456789",
+            toString: () => "MockWalletAddress123456789",
           } as unknown as PublicKey,
         }),
         disconnect: async () => {},
@@ -174,20 +184,66 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  // Connect to Phantom wallet
+  // Handle visibility change (when user returns from wallet app on mobile)
+  useEffect(() => {
+    if (!isMobileDevice) return
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible" && !connected) {
+        // We might be returning from a wallet app, try to connect
+        try {
+          const provider = getProvider()
+          if (provider) {
+            await connect()
+          }
+        } catch (error) {
+          console.error("Error reconnecting after visibility change:", error)
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    // Also check when the window gets focus
+    const handleFocus = async () => {
+      if (!connected) {
+        try {
+          const provider = getProvider()
+          if (provider) {
+            await connect()
+          }
+        } catch (error) {
+          console.error("Error reconnecting after focus:", error)
+        }
+      }
+    }
+
+    window.addEventListener("focus", handleFocus)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+      window.removeEventListener("focus", handleFocus)
+    }
+  }, [isMobileDevice, connected])
+
+  // Connect to wallet
   const connect = async () => {
     try {
       setConnecting(true)
       const provider = getProvider()
 
       if (!provider) {
-        toast({
-          title: "Phantom wallet not found",
-          description: "Please install Phantom wallet to continue.",
-          variant: "destructive",
-        })
-        window.open("https://phantom.app/ul/browse/" + encodeURIComponent(window.location.href), "_blank");
-        return
+        if (isMobileDevice) {
+          // On mobile, we'll handle this in the NavBar component
+          return
+        } else {
+          toast({
+            title: "Wallet not found",
+            description: "Please install a Solana wallet extension to continue.",
+            variant: "destructive",
+          })
+          return
+        }
       }
 
       try {
@@ -221,6 +277,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             setUsdcBalance(0)
           }
         })
+
+        return true
       } catch (error: any) {
         // Handle user rejection specifically
         if (error.message && error.message.includes("User rejected")) {
@@ -236,6 +294,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             variant: "destructive",
           })
         }
+        return false
       }
     } catch (error) {
       console.error("Unexpected error:", error)
@@ -244,12 +303,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       })
+      return false
     } finally {
       setConnecting(false)
     }
   }
 
-  // Disconnect from Phantom wallet
+  // Disconnect from wallet
   const disconnect = async () => {
     try {
       const provider = getProvider()

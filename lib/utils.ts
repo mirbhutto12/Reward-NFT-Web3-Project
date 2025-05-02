@@ -33,9 +33,8 @@ export function sanitizeUrl(url: string | undefined): string {
 
 // Get the sanitized RPC URL
 export function getRpcUrl(): string {
-  const defaultUrl =
-    "https://morning-indulgent-energy.solana-devnet.quiknode.pro/450ae68bfe8c733d96e2301292cc52bab5ceb2cf/"
-  return sanitizeUrl(process.env.SOLANA_RPC_URL || defaultUrl)
+  const defaultUrl = "https://api.devnet.solana.com"
+  return sanitizeUrl(process.env.NEXT_PUBLIC_SOLANA_RPC_URL || defaultUrl)
 }
 
 export function cn(...inputs: ClassValue[]) {

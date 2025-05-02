@@ -100,7 +100,7 @@ export default function AirdropPage() {
           <p className="text-xl text-white mb-8">Claim your daily SOL airdrop to help with gas fees</p>
 
           {isDevnet && (
-            <div className="bg-theme-teal/20 text-white p-4 rounded-lg mb-6">
+            <div className="bg-[#00FFE0]/20 text-white p-4 rounded-lg mb-6">
               <p className="font-medium">
                 You are connected to Solana Devnet. Airdrops are available for testing purposes.
               </p>
@@ -109,7 +109,7 @@ export default function AirdropPage() {
 
           <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">
             <div className="mb-6">
-              <div className="w-24 h-24 bg-theme-teal rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-24 h-24 bg-[#00FFE0] rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="48"
@@ -120,7 +120,7 @@ export default function AirdropPage() {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-theme-dark"
+                  className="text-[#001F2B]"
                 >
                   <path d="M12 2v6.5l5-3v-3.5z" />
                   <path d="M7 2v3.5l5 3v-6.5z" />
@@ -139,14 +139,14 @@ export default function AirdropPage() {
                 <p className="text-white mb-4">
                   Airdrops are only available on devnet. This feature is not available on mainnet.
                 </p>
-                <Button disabled className="w-full py-6 bg-theme-yellow/50 text-white/70">
+                <Button disabled className="w-full py-6 bg-[#FFC93C]/50 text-white/70">
                   Claim Airdrop
                 </Button>
               </div>
             ) : timeLeft ? (
               <div>
                 <p className="text-white mb-4">Next airdrop available in approximately {timeLeft} hours</p>
-                <Button disabled className="w-full py-6 bg-theme-yellow/50 text-white/70">
+                <Button disabled className="w-full py-6 bg-[#FFC93C]/50 text-white/70">
                   Claim Airdrop
                 </Button>
               </div>
@@ -154,7 +154,7 @@ export default function AirdropPage() {
               <Button
                 onClick={handleClaim}
                 disabled={claiming}
-                className="w-full py-6 bg-theme-yellow hover:bg-theme-yellow/80 text-theme-dark"
+                className="w-full py-6 bg-[#FFC93C] hover:bg-opacity-80 text-[#001F2B]"
               >
                 {claiming ? "Claiming..." : "Claim Airdrop"}
               </Button>

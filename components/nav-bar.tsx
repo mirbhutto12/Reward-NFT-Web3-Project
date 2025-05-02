@@ -2,15 +2,13 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { useWallet } from "@/hooks/use-wallet"
 import { usePathname } from "next/navigation"
-import { useToast } from "@/components/ui/use-toast"
+import { WalletConnectButton } from "@/components/wallet-connect-button"
+import { useSolanaWallet } from "@/hooks/use-solana-wallet"
 
 export function NavBar() {
-  const { connected, connecting, connect, disconnect, isDevnet } = useWallet()
+  const { connected, isDevnet } = useSolanaWallet()
   const pathname = usePathname()
-  const { toast } = useToast()
 
   return (
     <nav className="py-4 flex items-center justify-between">
@@ -20,7 +18,7 @@ export function NavBar() {
           <span className="text-white text-2xl font-bold">Reward NFT</span>
         </Link>
         {isDevnet && (
-          <span className="ml-2 bg-theme-teal text-theme-dark text-xs font-medium px-2 py-1 rounded-full">DEVNET</span>
+          <span className="ml-2 bg-[#00FFE0] text-[#001F2B] text-xs font-medium px-2 py-1 rounded-full">DEVNET</span>
         )}
       </div>
 
@@ -46,40 +44,8 @@ export function NavBar() {
         )}
       </div>
 
-      <div>
-        {connected ? (
-          <Button variant="outline" className="text-white border-white hover:bg-white/10" onClick={disconnect}>
-            Disconnect
-          </Button>
-        ) : (
-          <Button
-            className="bg-theme-teal text-theme-dark hover:bg-theme-teal/80"
-            onClick={() => {
-              // Check if on mobile
-              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-
-              if (isMobile) {
-                // For mobile, try to open the Phantom app via deep link
-                const phantomDeepLink = `https://phantom.app/ul/browse/${encodeURIComponent(window.location.href)}`
-                window.location.href = phantomDeepLink
-
-                // Show toast with instructions after a short delay
-                setTimeout(() => {
-                  toast({
-                    title: "Opening Phantom Wallet",
-                    description: "If nothing happens, please install the Phantom wallet app first.",
-                  })
-                }, 1500)
-              } else {
-                // For desktop, use the normal connect flow
-                connect()
-              }
-            }}
-            disabled={connecting}
-          >
-            {connecting ? "Connecting..." : "Connect Wallet"}
-          </Button>
-        )}
+      <div className="flex items-center gap-2">
+        <WalletConnectButton />
       </div>
     </nav>
   )
