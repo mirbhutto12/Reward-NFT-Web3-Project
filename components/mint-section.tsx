@@ -100,7 +100,7 @@ export function MintSection() {
 
       // Call the mintNFT function from solana.ts
       const result = await mintNFT(
-        publicKey || "your-wallet-address", // Use the actual public key if available
+        publicKey || "A9GT8pYUR5F1oRwUsQ9ADeZTWq7LJMfmPQ3TZLmV6cQP", // Use the actual public key if available
         mintPriceSOL,
       )
 
