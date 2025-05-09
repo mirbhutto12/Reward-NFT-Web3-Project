@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Check, Share2, Copy, Twitter } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/components/ui/use-toast"
 
 export default function SuccessPage() {
@@ -15,8 +15,17 @@ export default function SuccessPage() {
   // Mock transaction ID
   const txId = "5UxV2MR7P5MCoGfKDv7jJZt84zqJuBdtzBhXjuW1Rvij"
 
-  // Mock referral link
-  const referralLink = `${window.location.origin}/mint?ref=abc123`
+  // Replace this line:
+  // const referralLink = `${window.location.origin}/mint?ref=abc123`
+
+  // With this code that safely handles server-side rendering:
+  const [referralLink, setReferralLink] = useState("https://example.com/mint?ref=abc123")
+
+  // Add this useEffect to update the referral link on the client side
+  useEffect(() => {
+    // This will only run in the browser
+    setReferralLink(`${window.location.origin}/mint?ref=abc123`)
+  }, [])
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink)
