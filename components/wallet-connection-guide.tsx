@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -9,11 +8,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useSolanaWallet } from "@/hooks/use-solana-wallet"
-import { HelpCircle, ExternalLink } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { HelpCircle, ExternalLink } from 'lucide-react'
+import { useWallet } from "@/hooks/use-wallet"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export function WalletConnectionGuide() {
-  const { isMobile } = useSolanaWallet()
+  const { isMobile } = useWallet()
 
   return (
     <Dialog>
@@ -25,19 +26,20 @@ export function WalletConnectionGuide() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Wallet Connection Guide</DialogTitle>
-          <DialogDescription>Learn how to connect your Solana wallet to our app.</DialogDescription>
+          <DialogTitle>Phantom Wallet Connection Guide</DialogTitle>
+          <DialogDescription>Learn how to connect your Phantom wallet to our app.</DialogDescription>
         </DialogHeader>
 
-        {isMobile ? (
-          <div className="space-y-4">
-            <h3 className="font-medium">Connecting on Mobile</h3>
+        <Tabs defaultValue={isMobile ? "mobile" : "desktop"}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="mobile">Mobile</TabsTrigger>
+            <TabsTrigger value="desktop">Desktop</TabsTrigger>
+          </TabsList>
 
+          <TabsContent value="mobile" className="space-y-4 mt-4">
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 1: Install a Wallet</h4>
-              <p className="text-sm text-muted-foreground">
-                First, make sure you have a Solana wallet app installed on your device.
-              </p>
+              <h3 className="font-medium">Step 1: Install Phantom Wallet</h3>
+              <p className="text-sm text-muted-foreground">First, install the Phantom wallet app on your device:</p>
               <div className="flex flex-wrap gap-2 mt-1">
                 <a
                   href="https://phantom.app/download"
@@ -47,57 +49,43 @@ export function WalletConnectionGuide() {
                 >
                   Phantom <ExternalLink className="h-3 w-3" />
                 </a>
-                <a
-                  href="https://solflare.com/download"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs bg-[#fc812b] text-white px-2 py-1 rounded-md"
-                >
-                  Solflare <ExternalLink className="h-3 w-3" />
-                </a>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 2: Connect Your Wallet</h4>
+              <h3 className="font-medium">Step 2: Connect Your Wallet</h3>
               <p className="text-sm text-muted-foreground">
-                Tap the "Connect Wallet" button and select your wallet from the list.
+                Tap "Connect Wallet" and select Phantom from the list.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 3: Approve the Connection</h4>
+              <h3 className="font-medium">Step 3: Approve Connection</h3>
               <p className="text-sm text-muted-foreground">
-                Your wallet app will open. Approve the connection request in your wallet app.
+                The Phantom app will open. Approve the connection request.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 4: Return to the App</h4>
-              <p className="text-sm text-muted-foreground">
-                After approving, you'll be redirected back to our app automatically.
-              </p>
+              <h3 className="font-medium">Step 4: Return to App</h3>
+              <p className="text-sm text-muted-foreground">After approving, you'll be redirected back to our app.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Troubleshooting</h4>
+              <h3 className="font-medium">Troubleshooting</h3>
               <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-                <li>Make sure you have the latest version of your wallet app</li>
-                <li>If you're not redirected back, manually return to this app</li>
+                <li>Make sure you have the latest Phantom app version</li>
+                <li>If not redirected back, manually return to this app</li>
                 <li>Try closing all browser tabs and starting again</li>
-                <li>Ensure you're using a supported browser (Chrome, Safari, Firefox)</li>
+                <li>Ensure you're using a supported browser</li>
               </ul>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <h3 className="font-medium">Connecting on Desktop</h3>
+          </TabsContent>
 
+          <TabsContent value="desktop" className="space-y-4 mt-4">
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 1: Install a Wallet Extension</h4>
-              <p className="text-sm text-muted-foreground">
-                First, make sure you have a Solana wallet extension installed in your browser.
-              </p>
+              <h3 className="font-medium">Step 1: Install Phantom Extension</h3>
+              <p className="text-sm text-muted-foreground">First, install the Phantom wallet extension in your browser:</p>
               <div className="flex flex-wrap gap-2 mt-1">
                 <a
                   href="https://phantom.app/download"
@@ -107,32 +95,34 @@ export function WalletConnectionGuide() {
                 >
                   Phantom <ExternalLink className="h-3 w-3" />
                 </a>
-                <a
-                  href="https://solflare.com/download"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs bg-[#fc812b] text-white px-2 py-1 rounded-md"
-                >
-                  Solflare <ExternalLink className="h-3 w-3" />
-                </a>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 2: Connect Your Wallet</h4>
+              <h3 className="font-medium">Step 2: Connect Your Wallet</h3>
               <p className="text-sm text-muted-foreground">
-                Click the "Connect Wallet" button and select your wallet from the list.
+                Click "Connect Wallet" and select Phantom from the list.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Step 3: Approve the Connection</h4>
+              <h3 className="font-medium">Step 3: Approve Connection</h3>
               <p className="text-sm text-muted-foreground">
-                A popup from your wallet extension will appear. Approve the connection request.
+                A popup from the Phantom extension will appear. Approve the connection request.
               </p>
             </div>
-          </div>
-        )}
+
+            <div className="space-y-2">
+              <h3 className="font-medium">Troubleshooting</h3>
+              <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                <li>Make sure the Phantom extension is installed correctly</li>
+                <li>Check if your wallet is unlocked</li>
+                <li>Try refreshing the page</li>
+                <li>Disable other wallet extensions that might conflict</li>
+              </ul>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )

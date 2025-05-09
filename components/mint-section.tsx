@@ -8,15 +8,21 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { mintNFT, calculateMintPriceInSol } from "@/lib/solana"
 import { getNftIpfsUrl } from "@/lib/actions"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 
 export function MintSection() {
-  const { connected, balance, connect, solPrice, publicKey } = useWallet()
+  const { connected, balance, solPrice, publicKey } = useWallet()
+  const { setVisible } = useWalletModal()
   const [minting, setMinting] = useState(false)
   const [mintPriceUSD] = useState(10) // Fixed price in USD
   const [mintPriceSOL, setMintPriceSOL] = useState(0)
   const [loadingPrice, setLoadingPrice] = useState(true)
   const { toast } = useToast()
   const router = useRouter()
+
+  // Ensure we have default values to prevent undefined errors
+  const safeBalance = balance || 0
+  const safeSolPrice = solPrice || 150
 
   // NFT IPFS URL - using fallback for client-side
   const [nftImageUrl, setNftImageUrl] = useState("/images/nft-character.png")
@@ -48,8 +54,8 @@ export function MintSection() {
       } catch (error) {
         console.error("Error calculating mint price:", error)
         // Fallback calculation if there's an error
-        if (solPrice > 0) {
-          setMintPriceSOL(mintPriceUSD / solPrice)
+        if (safeSolPrice > 0) {
+          setMintPriceSOL(mintPriceUSD / safeSolPrice)
         } else {
           setMintPriceSOL(mintPriceUSD / 150) // Default SOL price as fallback
         }
@@ -59,20 +65,23 @@ export function MintSection() {
     }
 
     updateMintPrice()
-  }, [solPrice, mintPriceUSD])
+  }, [safeSolPrice, mintPriceUSD])
 
   const handleMint = async () => {
+    // If not connected, open the wallet modal
     if (!connected) {
       try {
-        await connect()
-        // After connection, we should check again if connected before proceeding
-        // This will be handled on the next render if connection was successful
+        setVisible(true)
+        toast({
+          title: "Connection required",
+          description: "Please connect your wallet to mint an NFT.",
+        })
         return
       } catch (error) {
         console.error("Connection error:", error)
         toast({
-          title: "Connection required",
-          description: "Please connect your wallet to mint an NFT.",
+          title: "Connection failed",
+          description: "Failed to open wallet selection. Please try again.",
           variant: "destructive",
         })
         return
@@ -80,7 +89,7 @@ export function MintSection() {
     }
 
     // Check if user has enough balance
-    if (balance < mintPriceSOL) {
+    if (safeBalance < mintPriceSOL) {
       toast({
         title: "Insufficient balance",
         description: `You need at least ${mintPriceSOL.toFixed(4)} SOL to mint an NFT.`,

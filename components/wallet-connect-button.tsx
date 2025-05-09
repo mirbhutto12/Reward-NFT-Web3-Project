@@ -1,118 +1,230 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { useSolanaWallet } from "@/hooks/use-solana-wallet"
 import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { useWallet } from "@/hooks/use-wallet"
+import { Loader2, ChevronDown, LogOut, ExternalLink, Copy } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
+import { formatWalletAddress, formatCurrency } from "@/lib/utils"
+import { WalletSelectModal } from "@/components/wallet-select-modal"
 
 interface WalletConnectButtonProps {
   className?: string
+  onSuccess?: () => void
 }
 
-export function WalletConnectButton({ className }: WalletConnectButtonProps) {
-  const { connected, connecting, connect, disconnect, publicKey, isMobile } = useSolanaWallet()
+export function WalletConnectButton({ className, onSuccess }: WalletConnectButtonProps) {
+  const wallet = useWallet()
   const { toast } = useToast()
-  const [isReconnecting, setIsReconnecting] = useState(false)
-  const [connectionAttemptTime, setConnectionAttemptTime] = useState<number | null>(null)
+  const [isConnected, setIsConnected] = useState(false)
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [publicKeyStr, setPublicKeyStr] = useState<string | null>(null)
+  const [solBalance, setSolBalance] = useState(0)
+  const [usdtBalance, setUsdtBalance] = useState(0)
 
-  // Handle reconnection attempts when returning from a wallet app on mobile
+  // Add this near the top of the component, after the state declarations
   useEffect(() => {
-    if (!isMobile) return
+    // Check for existing connection on component mount
+    const checkExistingConnection = async () => {
+      // If wallet adapter indicates we're connected, ensure our local state reflects that
+      if (wallet?.connected && wallet?.publicKey) {
+        setIsConnected(true)
+        setPublicKeyStr(wallet.publicKey)
+        setSolBalance(wallet.solBalance)
+        setUsdtBalance(wallet.usdtBalance)
+        console.log("Existing wallet connection detected")
+      }
+    }
 
-    // Check if we're returning from a wallet app
-    const checkReturnFromWallet = () => {
-      const storedAttemptTime = sessionStorage.getItem("walletConnectionAttempt")
+    checkExistingConnection()
+  }, [])
 
-      if (storedAttemptTime && !connected && !connecting) {
-        const attemptTime = Number.parseInt(storedAttemptTime, 10)
-        const currentTime = Date.now()
+  // Safely access wallet properties
+  useEffect(() => {
+    // Check if wallet is already connected when component mounts
+    if (wallet) {
+      setIsConnected(wallet.connected)
+      setIsConnecting(wallet.connecting)
+      setPublicKeyStr(wallet.publicKey)
+      setSolBalance(wallet.solBalance)
+      setUsdtBalance(wallet.usdtBalance)
 
-        // If it's been less than 5 minutes since the connection attempt
-        if (currentTime - attemptTime < 5 * 60 * 1000) {
-          setIsReconnecting(true)
+      // Add event listener for wallet connection changes
+      const checkWalletStatus = () => {
+        setIsConnected(wallet.connected)
+        setPublicKeyStr(wallet.publicKey)
+        setSolBalance(wallet.solBalance)
+        setUsdtBalance(wallet.usdtBalance)
+      }
 
-          // Try to reconnect
-          connect()
+      // Check wallet status on focus to handle returning to the page
+      window.addEventListener("focus", checkWalletStatus)
 
-          // Clear the stored attempt time
-          sessionStorage.removeItem("walletConnectionAttempt")
-          setIsReconnecting(false)
-        } else {
-          // Clear stale connection attempts
-          sessionStorage.removeItem("walletConnectionAttempt")
+      return () => {
+        window.removeEventListener("focus", checkWalletStatus)
+      }
+    }
+  }, [wallet])
+
+  const handleConnect = async () => {
+    setIsConnecting(true)
+
+    try {
+      if (wallet) {
+        console.log("Initiating wallet connection...")
+        // This will open our custom wallet modal
+        await wallet.connect()
+
+        if (onSuccess) {
+          onSuccess()
         }
       }
+    } catch (error) {
+      console.error("Connection error:", error)
+      toast({
+        title: "Connection failed",
+        description: "Failed to connect wallet. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsConnecting(false)
     }
+  }
 
-    // Check when the document becomes visible again (user returns from wallet app)
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        checkReturnFromWallet()
+  const handleDisconnect = async () => {
+    if (wallet) {
+      try {
+        console.log("Disconnecting wallet...")
+        await wallet.disconnect()
+      } catch (error) {
+        console.error("Disconnect error:", error)
+        toast({
+          title: "Disconnect failed",
+          description: "Failed to disconnect wallet. Please try again.",
+          variant: "destructive",
+        })
       }
     }
-
-    // Check when the window gets focus
-    const handleFocus = () => {
-      checkReturnFromWallet()
-    }
-
-    // Initial check (in case we're already returning from a wallet)
-    checkReturnFromWallet()
-
-    // Set up event listeners
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-    window.addEventListener("focus", handleFocus)
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-      window.removeEventListener("focus", handleFocus)
-    }
-  }, [isMobile, connected, connecting, connect])
-
-  const handleConnect = () => {
-    if (isMobile) {
-      // Store the connection attempt time
-      sessionStorage.setItem("walletConnectionAttempt", Date.now().toString())
-      setConnectionAttemptTime(Date.now())
-    }
-
-    connect()
   }
 
-  const handleDisconnect = () => {
-    disconnect()
-    sessionStorage.removeItem("walletConnectionAttempt")
-    setConnectionAttemptTime(null)
-  }
-
-  // If we're connected, show the disconnect button
-  if (connected && publicKey) {
+  // If we're connected, show the wallet info dropdown
+  if (isConnected && publicKeyStr) {
     return (
-      <Button
-        variant="outline"
-        className={`text-white border-white hover:bg-white/10 ${className}`}
-        onClick={handleDisconnect}
-      >
-        Disconnect
-      </Button>
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className={`bg-white text-[#001F2B] hover:bg-white/90 ${className}`}>
+              {formatWalletAddress(publicKeyStr)}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Wallet</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex justify-between">
+              <span>SOL Balance:</span>
+              <span className="font-medium">{formatCurrency(solBalance)} SOL</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex justify-between">
+              <span>USDT Balance:</span>
+              <span className="font-medium">{formatCurrency(usdtBalance)} USDT</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex items-center"
+              onClick={() => {
+                if (publicKeyStr) {
+                  navigator.clipboard.writeText(publicKeyStr)
+                  toast({
+                    title: "Address Copied",
+                    description: "Wallet address copied to clipboard",
+                  })
+                }
+              }}
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Copy Address
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center">
+              <a
+                href={`https://explorer.solana.com/address/${publicKeyStr}?cluster=devnet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center w-full"
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                View on Explorer
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex items-center text-red-500" onClick={handleDisconnect}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Disconnect
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Render the wallet modal but keep it closed */}
+        <WalletSelectModal
+          open={wallet.isWalletModalOpen}
+          onClose={() => wallet.setIsWalletModalOpen(false)}
+          onSuccess={onSuccess}
+        />
+      </>
     )
   }
 
-  // If we're connecting or reconnecting, show a loading state
-  if (connecting || isReconnecting) {
+  // If we're connecting, show a loading state
+  if (isConnecting) {
     return (
-      <Button className={`bg-[#00FFE0] text-[#001F2B] hover:bg-opacity-80 ${className}`} disabled>
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        Connecting...
-      </Button>
+      <>
+        <Button className={`bg-white text-[#001F2B] hover:bg-white/90 ${className}`} disabled>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Connecting...
+        </Button>
+
+        {/* Render the wallet modal */}
+        <WalletSelectModal
+          open={wallet.isWalletModalOpen}
+          onClose={() => wallet.setIsWalletModalOpen(false)}
+          onSuccess={onSuccess}
+        />
+      </>
     )
   }
 
-  // Otherwise, show the connect button
+  // Standard connect button
   return (
-    <Button className={`bg-[#00FFE0] text-[#001F2B] hover:bg-opacity-80 ${className}`} onClick={handleConnect}>
-      Connect Wallet
-    </Button>
+    <>
+      <Button
+        className={`bg-white text-[#001F2B] hover:bg-white/90 ${className}`}
+        onClick={handleConnect}
+        disabled={isConnecting || wallet?.connecting}
+      >
+        {isConnecting || wallet?.connecting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Connecting...
+          </>
+        ) : (
+          "Connect Wallet"
+        )}
+      </Button>
+
+      {/* Render the wallet modal but keep it closed unless isWalletModalOpen is true */}
+      <WalletSelectModal
+        open={wallet.isWalletModalOpen}
+        onClose={() => wallet.setIsWalletModalOpen(false)}
+        onSuccess={onSuccess}
+      />
+    </>
   )
 }

@@ -33,7 +33,7 @@ type WalletContextType = {
   disconnect: () => void
   solPrice: number
   isDevnet: boolean
-  usdcBalance: number
+  usdtBalance: number
 }
 
 export const WalletContext = createContext<WalletContextType>({
@@ -45,7 +45,7 @@ export const WalletContext = createContext<WalletContextType>({
   disconnect: () => {},
   solPrice: 150,
   isDevnet: true,
-  usdcBalance: 0,
+  usdtBalance: 0,
 })
 
 // Solana connection - using sanitized RPC URL
@@ -54,15 +54,15 @@ const connection = new Connection(getRpcUrl())
 // Check if we're on devnet
 const isDevnet = connection.rpcEndpoint.includes("devnet") || connection.rpcEndpoint.includes("quicknode")
 
-// USDC token address - hardcoded for client-side use
-const USDC_TOKEN_ADDRESS = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+// USDT token address - hardcoded for client-side use
+const USDT_TOKEN_ADDRESS = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [connected, setConnected] = useState(false)
   const [connecting, setConnecting] = useState(false)
   const [publicKey, setPublicKey] = useState<string | null>(null)
   const [balance, setBalance] = useState(0)
-  const [usdcBalance, setUsdcBalance] = useState(0)
+  const [usdtBalance, setUsdtBalance] = useState(0)
   const [solPrice, setSolPrice] = useState(150) // Default SOL price in USD
   const { toast } = useToast()
   const [isMobileDevice, setIsMobileDevice] = useState(false)
@@ -133,18 +133,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const balance = await connection.getBalance(pubKey)
       setBalance(balance / LAMPORTS_PER_SOL)
 
-      // For demo purposes, set a mock USDC balance
+      // For demo purposes, set a mock USDT balance
       // In a real app, you would fetch the actual token balance
-      setUsdcBalance(25.5)
+      setUsdtBalance(25.5)
     } catch (error) {
       console.error("Error fetching balance:", error)
       // Set a default balance for development or if there's an error
       if (process.env.NODE_ENV === "development") {
         setBalance(5.0) // Mock balance for development
-        setUsdcBalance(25.5)
+        setUsdtBalance(25.5)
       } else {
         setBalance(0)
-        setUsdcBalance(0)
+        setUsdtBalance(0)
       }
     }
   }
@@ -262,7 +262,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           setConnected(false)
           setPublicKey(null)
           setBalance(0)
-          setUsdcBalance(0)
+          setUsdtBalance(0)
         })
 
         provider.on("accountChanged", (publicKey: PublicKey | null) => {
@@ -274,7 +274,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             setConnected(false)
             setPublicKey(null)
             setBalance(0)
-            setUsdcBalance(0)
+            setUsdtBalance(0)
           }
         })
 
@@ -321,7 +321,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setConnected(false)
       setPublicKey(null)
       setBalance(0)
-      setUsdcBalance(0)
+      setUsdtBalance(0)
     } catch (error) {
       console.error("Error disconnecting wallet:", error)
     }
@@ -338,7 +338,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         disconnect,
         solPrice,
         isDevnet,
-        usdcBalance,
+        usdtBalance,
       }}
     >
       {children}

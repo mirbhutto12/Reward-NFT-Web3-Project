@@ -23,7 +23,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen gradient-bg">
+    <main className="min-h-screen">
       <div className="container mx-auto px-4 pb-8">
         <NavBar />
         <div className="mt-8">

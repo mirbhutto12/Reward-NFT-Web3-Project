@@ -8,10 +8,13 @@ import { Input } from "@/components/ui/input"
 import { generateReferralLink } from "@/lib/solana"
 
 export function ReferralStats() {
-  const { publicKey, usdcBalance } = useWallet()
+  const { publicKey, usdtBalance } = useWallet()
   const { toast } = useToast()
   const [copied, setCopied] = useState(false)
   const [referralLink, setReferralLink] = useState("")
+
+  // Ensure we have default values to prevent undefined errors
+  const safeUsdtBalance = usdtBalance || 0
 
   // Generate referral link based on public key
   useEffect(() => {
@@ -26,7 +29,7 @@ export function ReferralStats() {
   // Mock stats - in a real app, these would be fetched from a database
   const totalPoints = 126
   const referredUsers = 15
-  const rewardPerReferral = 2 // USDC
+  const rewardPerReferral = 2 // USDT
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink)
@@ -92,7 +95,7 @@ export function ReferralStats() {
           <p className="text-white/70 text-sm">Referred Users</p>
         </div>
         <div className="text-center">
-          <p className="text-4xl font-bold text-theme-pink">{rewardPerReferral} USDC</p>
+          <p className="text-4xl font-bold text-theme-pink">{rewardPerReferral} USDT</p>
           <p className="text-white/70 text-sm">per referral</p>
         </div>
       </div>
@@ -100,8 +103,8 @@ export function ReferralStats() {
       <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-white font-medium">Available USDC Balance</p>
-            <p className="text-2xl font-bold text-theme-teal">{usdcBalance.toFixed(2)} USDC</p>
+            <p className="text-white font-medium">Available USDT Balance</p>
+            <p className="text-2xl font-bold text-theme-teal">{safeUsdtBalance.toFixed(2)} USDT</p>
           </div>
           <Button className="bg-theme-teal hover:bg-theme-teal/80 text-theme-dark">Withdraw</Button>
         </div>

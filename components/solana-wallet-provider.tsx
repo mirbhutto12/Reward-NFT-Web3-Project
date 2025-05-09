@@ -1,15 +1,11 @@
 "use client"
 
-import { type FC, type ReactNode, useMemo } from "react"
+import { type FC, type ReactNode, useMemo, useEffect } from "react"
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base"
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react"
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  TorusWalletAdapter,
-  LedgerWalletAdapter,
-} from "@solana/wallet-adapter-wallets"
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom"
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare"
 import { getRpcUrl } from "@/lib/utils"
 
 // Import the wallet adapter styles
@@ -30,16 +26,17 @@ export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({ children }
   // You can also provide a custom RPC endpoint
   const endpoint = useMemo(() => rpcUrl, [rpcUrl])
 
-  // Initialize all the supported wallet adapters
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter({ network }),
-      new TorusWalletAdapter(),
-      new LedgerWalletAdapter(),
-    ],
-    [network],
-  )
+  // Initialize wallet adapters
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter({ network })], [network])
+
+  // Log connection details for debugging
+  useEffect(() => {
+    console.log("SolanaWalletProvider initialized with:", {
+      network,
+      endpoint,
+      walletCount: wallets.length,
+    })
+  }, [network, endpoint, wallets])
 
   return (
     <ConnectionProvider endpoint={endpoint}>

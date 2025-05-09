@@ -26,7 +26,7 @@ export function FaqSection() {
           <AccordionTrigger className="text-white text-xl font-medium py-4">How do I earn rewards?</AccordionTrigger>
           <AccordionContent className="text-white/80 bg-white/5 p-4 rounded-lg">
             You can earn rewards by minting NFTs, referring friends to the platform, and completing various quests. Each
-            successful referral earns you 2 USDC, and completing quests earns you points that can be exchanged for
+            successful referral earns you 2 USDT, and completing quests earns you points that can be exchanged for
             rewards.
           </AccordionContent>
         </AccordionItem>

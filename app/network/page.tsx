@@ -50,9 +50,10 @@ export default function NetworkPage() {
   }, [])
 
   return (
-    <main className="min-h-screen gradient-bg">
+    <main className="min-h-screen">
       <div className="container mx-auto px-4 pb-8">
         <NavBar />
+
         <div className="mt-8">
           <h1 className="text-6xl font-bold text-white mb-8">Network Health</h1>
 
@@ -62,36 +63,36 @@ export default function NetworkPage() {
             <div>
               <SolanaStatus />
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 hover:bg-white/20 transition-colors">
                 <h3 className="text-lg font-medium text-white mb-4">Performance Metrics</h3>
 
                 {loading ? (
-                  <div className="flex justify-center py-8">
+                  <div className="flex items-center justify-center p-4">
                     <Loader2 className="h-8 w-8 animate-spin text-white" />
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/5 p-4 rounded-lg text-center">
-                      <p className="text-white/70 text-sm">Transactions Per Second</p>
-                      <p className="text-3xl font-bold text-theme-teal mt-2">{tps !== null ? tps : "N/A"}</p>
+                    <div className="bg-white/10 p-4 rounded-lg text-center hover:bg-white/20 transition-colors">
+                      <p className="text-white/90 text-sm">Transactions Per Second</p>
+                      <p className="text-3xl font-bold text-white mt-2">{tps !== null ? tps : "N/A"}</p>
                     </div>
 
-                    <div className="bg-white/5 p-4 rounded-lg text-center">
-                      <p className="text-white/70 text-sm">Current Epoch</p>
-                      <p className="text-3xl font-bold text-theme-yellow mt-2">{epochInfo ? epochInfo.epoch : "N/A"}</p>
+                    <div className="bg-white/10 p-4 rounded-lg text-center hover:bg-white/20 transition-colors">
+                      <p className="text-white/90 text-sm">Current Epoch</p>
+                      <p className="text-3xl font-bold text-white mt-2">{epochInfo ? epochInfo.epoch : "N/A"}</p>
                     </div>
 
                     {epochInfo && (
                       <>
-                        <div className="bg-white/5 p-4 rounded-lg text-center">
-                          <p className="text-white/70 text-sm">Epoch Progress</p>
-                          <p className="text-3xl font-bold text-theme-pink mt-2">
+                        <div className="bg-white/10 p-4 rounded-lg text-center hover:bg-white/20 transition-colors">
+                          <p className="text-white/90 text-sm">Epoch Progress</p>
+                          <p className="text-3xl font-bold text-white mt-2">
                             {Math.round((epochInfo.slotIndex / epochInfo.slotsInEpoch) * 100)}%
                           </p>
                         </div>
 
-                        <div className="bg-white/5 p-4 rounded-lg text-center">
-                          <p className="text-white/70 text-sm">Slots in Epoch</p>
+                        <div className="bg-white/10 p-4 rounded-lg text-center hover:bg-white/20 transition-colors">
+                          <p className="text-white/90 text-sm">Slots in Epoch</p>
                           <p className="text-3xl font-bold text-white mt-2">
                             {epochInfo.slotIndex} / {epochInfo.slotsInEpoch}
                           </p>
@@ -108,29 +109,29 @@ export default function NetworkPage() {
             <div>
               <RpcEndpoints />
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 hover:bg-white/20 transition-colors">
                 <h3 className="text-lg font-medium text-white mb-4">Network Information</h3>
 
                 <div className="space-y-4">
-                  <div className="bg-white/5 p-4 rounded-lg">
-                    <p className="text-white/70 mb-1">RPC Endpoint</p>
+                  <div className="bg-white/10 p-4 rounded-lg hover:bg-white/20 transition-colors">
+                    <p className="text-white/90 mb-1">RPC Endpoint</p>
                     <p className="text-white break-all text-sm">{rpcUrl}</p>
                   </div>
 
-                  <div className="bg-white/5 p-4 rounded-lg">
-                    <p className="text-white/70 mb-1">Network</p>
+                  <div className="bg-white/10 p-4 rounded-lg hover:bg-white/20 transition-colors">
+                    <p className="text-white/90 mb-1">Network</p>
                     <p className="text-white">
                       {rpcUrl.includes("devnet") || rpcUrl.includes("quicknode") ? "Devnet" : "Mainnet"}
                     </p>
                   </div>
 
-                  <div className="bg-white/5 p-4 rounded-lg">
-                    <p className="text-white/70 mb-1">Explorer</p>
+                  <div className="bg-white/10 p-4 rounded-lg hover:bg-white/20 transition-colors">
+                    <p className="text-white/90 mb-1">Explorer</p>
                     <a
                       href={`https://explorer.solana.com/?cluster=${rpcUrl.includes("devnet") || rpcUrl.includes("quicknode") ? "devnet" : "mainnet-beta"}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-theme-teal hover:text-theme-teal/80"
+                      className="text-white hover:underline"
                     >
                       Open Solana Explorer
                     </a>

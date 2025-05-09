@@ -39,7 +39,7 @@ export function NftGallery() {
         {nfts.map((nft) => (
           <div key={nft.id} className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
             <Image
-              src={nft.image || "/placeholder.svg"}
+              src="/images/nft-character.png"
               alt={nft.name}
               width={300}
               height={300}

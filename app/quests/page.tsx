@@ -20,12 +20,12 @@ export default function QuestsPage() {
   }
 
   return (
-    <main className="min-h-screen gradient-bg">
+    <main className="min-h-screen">
       <div className="container mx-auto px-4 pb-8">
         <NavBar />
         <div className="mt-8 bg-white/10 backdrop-blur-sm rounded-3xl p-8">
           <h1 className="text-6xl font-bold text-white mb-8">Quests</h1>
-          <p className="text-xl text-white mb-8">Complete quests to earn points and unlock rewards</p>
+          <p className="text-xl text-white/90 mb-8">Complete quests to earn points and unlock rewards</p>
 
           <div className="grid gap-6">
             <QuestCard
@@ -80,17 +80,17 @@ function QuestCard({
   progress?: string
 }) {
   return (
-    <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-colors">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-          <p className="text-white/70 mb-2">{description}</p>
-          <p className="text-theme-teal font-medium">Reward: {reward}</p>
-          {progress && <p className="text-white/70 mt-2">Progress: {progress}</p>}
+          <p className="text-white/90 mb-2">{description}</p>
+          <p className="text-white font-medium">Reward: {reward}</p>
+          {progress && <p className="text-white/90 mt-2">Progress: {progress}</p>}
         </div>
         <div className="ml-4">
           {completed ? (
-            <div className="bg-theme-teal text-theme-dark rounded-full p-2">
+            <div className="bg-white text-[#001F2B] rounded-full p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -107,9 +107,7 @@ function QuestCard({
               </svg>
             </div>
           ) : (
-            <button className="bg-theme-yellow hover:bg-theme-yellow/80 text-theme-dark rounded-lg px-4 py-2">
-              Complete
-            </button>
+            <button className="bg-white hover:bg-white/90 text-[#001F2B] rounded-lg px-4 py-2">Complete</button>
           )}
         </div>
       </div>

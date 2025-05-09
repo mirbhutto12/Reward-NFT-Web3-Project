@@ -26,7 +26,7 @@ export function useSolanaWallet() {
   const { toast } = useToast()
 
   const [balance, setBalance] = useState(0)
-  const [usdcBalance, setUsdcBalance] = useState(0)
+  const [usdtBalance, setUsdtBalance] = useState(0)
   const [solPrice, setSolPrice] = useState(150) // Default SOL price in USD
   const [isDevnet, setIsDevnet] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
@@ -66,16 +66,16 @@ export function useSolanaWallet() {
           const balance = await connection.getBalance(publicKey)
           setBalance(balance / LAMPORTS_PER_SOL)
 
-          // For demo purposes, set a mock USDC balance
+          // For demo purposes, set a mock USDT balance
           // In a real app, you would fetch the actual token balance
-          setUsdcBalance(25.5)
+          setUsdtBalance(25.5)
         } catch (error) {
           console.error("Error fetching balance:", error)
           setBalance(0)
         }
       } else {
         setBalance(0)
-        setUsdcBalance(0)
+        setUsdtBalance(0)
       }
     }
 
@@ -139,7 +139,7 @@ export function useSolanaWallet() {
     connect,
     disconnect,
     balance,
-    usdcBalance,
+    usdtBalance,
     solPrice,
     isDevnet,
     isMobile,

@@ -37,7 +37,11 @@ function ProfileImage() {
 }
 
 export function ProfileHeader() {
-  const { publicKey, balance, usdcBalance } = useWallet()
+  const { publicKey, balance, usdtBalance } = useWallet()
+
+  // Ensure we have default values to prevent undefined errors
+  const safeBalance = balance || 0
+  const safeUsdtBalance = usdtBalance || 0
 
   // Format public key for display
   const displayAddress = publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : "Not connected"
@@ -53,8 +57,8 @@ export function ProfileHeader() {
           <ProfileImage />
         </div>
         <h3 className="text-2xl font-bold text-white">{displayAddress}</h3>
-        <p className="text-white">SOL Balance: {balance.toFixed(2)} SOL</p>
-        <p className="text-white">USDC Balance: {usdcBalance.toFixed(2)} USDC</p>
+        <p className="text-white">SOL Balance: {safeBalance.toFixed(2)} SOL</p>
+        <p className="text-white">USDT Balance: {safeUsdtBalance.toFixed(2)} USDT</p>
       </div>
     </div>
   )

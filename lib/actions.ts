@@ -24,10 +24,10 @@ export async function getCurrentSlot(): Promise<number> {
   }
 }
 
-// Server action to get the USDC token address
-export async function getUsdcTokenAddress(): Promise<string> {
+// Server action to get the USDT token address
+export async function getUsdtTokenAddress(): Promise<string> {
   // Use the environment variable on the server side
-  return process.env.USDC_TOKEN_ADDRESS || "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  return process.env.USDT_TOKEN_ADDRESS || "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 }
 
 // Server action to get the NFT IPFS URL

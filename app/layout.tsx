@@ -2,14 +2,14 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { SolanaWalletProvider } from "@/components/solana-wallet-provider"
+import { SolanaProvider } from "@/providers/solana-provider"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Reward NFT - Mint exclusive NFTs on Solana",
-  description: "Mint exclusive NFTs, earn through referrals, and complete quests to unlock rewards.",
+  title: "Reward NFT - Mint, Refer, Earn Rewards",
+  description: "Mint exclusive NFTs, refer friends, and earn USDC rewards on the Solana blockchain",
     generator: 'v0.dev'
 }
 
@@ -21,10 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SolanaWalletProvider>
+        <SolanaProvider>
           {children}
           <Toaster />
-        </SolanaWalletProvider>
+        </SolanaProvider>
       </body>
     </html>
   )
